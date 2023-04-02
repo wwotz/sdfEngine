@@ -1,11 +1,27 @@
 #ifndef SDFE_ENGINEINCLUDE_H_
 #define SDFE_ENGINEINCLUDE_H_
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+/*#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
+
+#include <GL/glew.h>
+#include <GL/glu.h>
+#include <GL/gl.h>*/
+
+
 /* debug */
+#define SDFE_DEBUG_STACK_CAPACITY 10
+#define SDFE_DEBUG_MESSAGE_LENGTH 1024
 #define SDFE_PUSH_ERROR(msg) \
         do { sdfe_debug_stack_push(msg, __FILE__, __LINE__); } while (0)
 extern int sdfe_debug_stack_push(const char *msg, const char *file, size_t line);
 extern const char *sdfe_debug_stack_pop(void);
+extern int sdfe_debug_had_error(void);
 
 /* window */
 extern int sdfe_window_init(const char *name, int x, int y, int w, int h,
@@ -18,6 +34,7 @@ typedef enum SDFE_BUFFER_ENUM {
         SDFE_BUFFER_NO_ERROR = 0,
         SDFE_BUFFER_NULL_ERROR,
         SDFE_BUFFER_DATA_ERROR,
+        SDFE_BUFFER_RESIZE_ERROR,
         SDFE_BUFFER_ENUM_COUNT
 } SDFE_BUFFER_ENUM;
 
