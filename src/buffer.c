@@ -44,6 +44,13 @@ int sdfe_buffer_insert(sdfe_buffer_t *buffer, const char *data, size_t offset)
         return SDFE_BUFFER_NO_ERROR;
 }
 
+int sdfe_buffer_length(sdfe_buffer_t *buffer)
+{
+        if (buffer)
+                return buffer->size;
+        return 0;
+}
+
 int sdfe_buffer_resize(sdfe_buffer_t *buffer)
 {
         if (!buffer) {
