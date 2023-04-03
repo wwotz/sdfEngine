@@ -20,11 +20,17 @@
 #define SDFE_DEBUG_MESSAGE_LENGTH 1024
 #define SDFE_PUSH_ERROR(msg) \
         do { sdfe_debug_stack_push(msg, __FILE__, __LINE__); } while (0)
-extern int sdfe_debug_stack_push(const char *msg, const char *file, size_t line);
+extern void sdfe_debug_stack_push(const char *msg, const char *file, size_t line);
 extern const char *sdfe_debug_stack_pop(void);
 extern int sdfe_debug_had_error(void);
 
 /* window */
+#define SDFE_WINDOW_X SDL_WINDOWPOS_UNDEFINED
+#define SDFE_WINDOW_Y SDL_WINDOWPOS_UNDEFINED
+#define SDFE_WINDOW_W 1200.0
+#define SDFE_WINDOW_H 800.0
+#define SDFE_WINDOW_FLAGS (SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL)
+
 typedef enum SDFE_WINDOW_ENUM {
         SDFE_WINDOW_NO_ERROR = 0,
         SDFE_WINDOW_SDL_ERROR,
@@ -32,12 +38,22 @@ typedef enum SDFE_WINDOW_ENUM {
         SDFE_WINDOW_TTF_ERROR,
         SDFE_WINDOW_WINDOW_ERROR,
         SDFE_WINDOW_CONTEXT_ERROR,
+        SDFE_WINDOW_GLEW_ERROR,
         SDFE_WINDOW_ENUM_COUNT
 } SDFE_WINDOW_ENUM;
 
 extern GLfloat sdfe_model[16], sdfe_view[16], sdfe_projection[16];
 extern int sdfe_window_init(const char *name, int x, int y, int w, int h,
                             int flags);
+extern void sdfe_window_clear_buffers(GLbitfield buffers);
+extern void sdfe_window_swap(void);
+extern void sdfe_window_events(void);
+extern int sdfe_window_poll_event(void);
+extern int sdfe_window_event_type(void);
+extern int sdfe_window_get_running(void);
+extern GLfloat sdfe_window_get_width(void);
+extern GLfloat sdfe_window_get_height(void);
+extern void sdfe_window_set_running(int running);
 extern void sdfe_window_free(void);
 
 /* buffer */
@@ -131,6 +147,54 @@ extern int sdfe_matrix_scale3fv(float m[16], sdfe_vec3_t vec);
 extern int sdfe_matrix_rotate3f(float m[16], float x, float y, float z, float angle);
 extern int sdfe_matrix_rotate3fv(float m[16], sdfe_vec3_t, float angle);
 extern int sdfe_matrix_orthographic(float m[16], float t, float r, float b, float l, float n, float f);
+
+/* texture */
+typedef enum SDFE_TEXTURE_TYPE {
+        SDFE_TEXTURE_FILE = 0,
+        SDFE_TEXTURE_PIXELS,
+        SDFE_TEXTURE_TYPE_COUNT
+} SDFE_TEXTURE_TYPE;
+
+typedef struct sdfe_texture_info_t {
+        SDFE_TEXTURE_TYPE type;
+        char *path;
+        GLuint *pixels;
+        GLuint w;
+        GLuint h;
+} sdfe_texture_info_t;
+
+extern sdfe_texture_info_t sdfe_texture_info_create(SDFE_TEXTURE_TYPE type,
+                                                    char *path,
+                                                    GLuint *pixels,
+                                                    GLuint w,
+                                                    GLuint h);
+extern GLuint sdfe_texture_create(sdfe_texture_info_t tinfo);
+
+/* shader */
+typedef enum SDFE_SHADER_TYPE {
+        SDFE_SHADER_FILE = 0,
+        SDFE_SHADER_SOURCE,
+        SDFE_SHADER_TYPE_COUNT
+} SDFE_SHADER_TYPE;
+
+typedef struct sdfe_shader_info_t {
+        SDFE_SHADER_TYPE data_type;
+        GLuint shader_type;
+        char *data;
+} sdfe_shader_info_t;
+
+typedef struct sdfe_program_info_t {
+        sdfe_shader_info_t vert;
+        sdfe_shader_info_t frag;
+} sdfe_program_info_t;
+
+extern sdfe_shader_info_t sdfe_shader_info_create(SDFE_SHADER_TYPE data_type,
+                                                  GLuint shader_type,
+                                                  char *data);
+extern sdfe_program_info_t sdfe_program_info_create(sdfe_shader_info_t vert,
+                                                    sdfe_shader_info_t frag);
+extern GLuint sdfe_shader_create(sdfe_shader_info_t info);
+extern GLuint sdfe_program_create(sdfe_program_info_t info);
 
 /* rect */
 typedef enum sdfe_rect_locs_t {
