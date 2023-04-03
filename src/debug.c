@@ -14,7 +14,7 @@ static int sdfe_debug_stack_empty()
         return sdfe_debug_stack_size == 0;
 }
 
-int sdfe_debug_stack_push(const char *msg, const char *file, size_t line)
+void sdfe_debug_stack_push(const char *msg, const char *file, size_t line)
 {
         if (!sdfe_debug_stack_full())
                 sdfe_debug_stack_size++;
@@ -30,7 +30,8 @@ int sdfe_debug_stack_push(const char *msg, const char *file, size_t line)
 
         snprintf(sdfe_debug_stack[sdfe_debug_stack_ptr], SDFE_DEBUG_MESSAGE_LENGTH,
                  "%s@%ld: %s", file, line, msg);
-        return 0;
+        sdfe_debug_stack_ptr = (sdfe_debug_stack_ptr + 1)
+                % SDFE_DEBUG_STACK_CAPACITY;
 }
 
 const char *sdfe_debug_stack_pop(void)
