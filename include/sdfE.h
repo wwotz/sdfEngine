@@ -78,9 +78,13 @@ typedef struct sdfe_buffer_t {
 } sdfe_buffer_t;
 
 extern int sdfe_buffer_init(sdfe_buffer_t *buffer, const char *data);
+extern int sdfe_buffer_append(sdfe_buffer_t *buffer, char c);
 extern int sdfe_buffer_write(sdfe_buffer_t *buffer, const char *data);
 extern int sdfe_buffer_insert(sdfe_buffer_t *buffer, const char *data, size_t offset);
+extern int sdfe_buffer_clear(sdfe_buffer_t *buffer);
 extern int sdfe_buffer_length(sdfe_buffer_t *buffer);
+extern char sdfe_buffer_get_charat(sdfe_buffer_t *buffer, int index);
+extern void sdfe_buffer_set_charat(sdfe_buffer_t *buffer, int index, char c);
 extern int sdfe_buffer_resize(sdfe_buffer_t *buffer);
 extern void sdfe_buffer_free(sdfe_buffer_t *buffer);
 
@@ -228,6 +232,7 @@ typedef struct sdfe_rect_t {
 
 extern int sdfe_rect_init(sdfe_rect_t *rect, GLfloat x, GLfloat y, GLfloat w, GLfloat h,
                           GLuint program, GLuint texture, GLuint colour);
+extern void sdfe_rect_clip4f(sdfe_rect_t *rect, GLfloat x, GLfloat y, GLfloat w, GLfloat h);
 extern void sdfe_rect_render(sdfe_rect_t *rect);
 extern GLfloat sdfe_rect_get_x(sdfe_rect_t *rect);
 extern GLfloat sdfe_rect_get_y(sdfe_rect_t *rect);
@@ -240,5 +245,89 @@ extern void sdfe_rect_set_width(sdfe_rect_t *rect, GLfloat w);
 extern void sdfe_rect_set_height(sdfe_rect_t *rect, GLfloat h);
 extern void sdfe_rect_set_colour(sdfe_rect_t *rect, GLuint colour);
 extern void sdfe_rect_free(sdfe_rect_t *rect);
+
+/* text */
+#define SDFE_METRICTABLE_SIZE 16
+
+typedef enum SDFE_GLYPH_ENUM {
+        SDFE_GLYPH_NO_ERROR = 0,
+        SDFE_GLYPH_NULL_ERROR,
+        SDFE_GLYPH_FONT_ERROR,
+        SDFE_GLYPH_TEXT_ERROR,
+        SDFE_GLYPH_TEXTURE_ERROR,
+        SDFE_GLYPH_ENUM_COUNT
+} SDFE_GLYPH_ENUM;
+
+typedef enum SDFE_METRIC_ENUM {
+        SDFE_METRIC_NO_ERROR = 0,
+        SDFE_METRIC_NULL_ERROR,
+        SDFE_METRIC_ENUM_COUNT
+} SDFE_METRIC_ENUM;
+
+typedef struct sdfe_metric_t {
+        char key;
+        int minx;
+        int maxx;
+        int miny;
+        int maxy;
+        int advance;
+        int offset;
+        struct sdfe_metric_t *next;
+} sdfe_metric_t;
+
+typedef struct sdfe_glyph_t {
+        GLuint texture;
+        GLuint tw;
+        GLuint th;
+        GLuint w;
+        GLuint h;
+        sdfe_metric_t *table[SDFE_METRICTABLE_SIZE];
+} sdfe_glyph_t;
+
+typedef enum {
+        SDFE_TEXT_NO_ERROR = 0,
+        SDFE_TEXT_NULL_ERROR,
+        SDFE_TEXT_PROGRAM_ERROR,
+        SDFE_TEXT_ENUM_COUNT
+} SDFE_TEXT_ENUM;
+
+typedef struct {
+        sdfe_buffer_t buffer;
+        sdfe_rect_t rect;
+} sdfe_text_t;
+
+extern sdfe_metric_t *sdfe_metric_create(char key, int minx, int maxx,
+                                         int miny, int maxy, int advance, int offset);
+extern int sdfe_metric_init(sdfe_metric_t *metric, char key, int minx, int maxx,
+                            int miny, int maxy, int advance, int offset);
+extern sdfe_metric_t *sdfe_metric_insert(sdfe_metric_t *metric, char key, int minx, int maxx,
+                                         int miny, int maxy, int advance, int offset);
+extern sdfe_metric_t *sdfe_metric_lookup(sdfe_metric_t *metric, char key);
+extern void sdfe_metric_free(sdfe_metric_t *metric);
+extern int sdfe_glyph_init(sdfe_glyph_t *glyph, const char *path,
+                                      const char *sample, GLuint ptsize);
+extern void sdfe_glyph_free(sdfe_glyph_t *glyph);
+
+extern sdfe_text_t *sdfe_text_create(const char *data, sdfe_glyph_t *glyph, GLuint program,
+                                     GLfloat x, GLfloat y, GLuint colour);
+extern int sdfe_text_init(sdfe_text_t *text,  const char *data, sdfe_glyph_t *glyph,
+                          GLuint program, GLfloat x, GLfloat y, GLuint colour);
+extern int sdfe_text_resize(sdfe_text_t *text);
+extern int sdfe_text_append(sdfe_text_t *text, char c);
+extern int sdfe_text_write(sdfe_text_t *text, const char *data);
+extern int sdfe_text_clear(sdfe_text_t *text);
+extern GLfloat sdfe_text_get_height(sdfe_text_t *text, sdfe_glyph_t *glyph);
+extern GLfloat sdfe_text_get_width(sdfe_text_t *text, sdfe_glyph_t *glyph);
+extern GLfloat sdfe_text_get_x(sdfe_text_t *text);
+extern GLfloat sdfe_text_get_y(sdfe_text_t *text);
+extern size_t sdfe_text_get_length(sdfe_text_t *text);
+extern char sdfe_text_get_charat(sdfe_text_t *text, int index);
+extern GLuint sdfe_text_get_colour(sdfe_text_t *text);
+extern void sdfe_text_set_charat(sdfe_text_t *text, int index, char c);
+extern void sdfe_text_set_colour(sdfe_text_t *text, GLuint colour);
+extern void sdfe_text_set_x(sdfe_text_t *text, GLfloat x);
+extern void sdfe_text_set_y(sdfe_text_t *text, GLfloat y);
+extern void sdfe_text_render(sdfe_text_t *text, sdfe_glyph_t *glyph);
+extern void sdfe_text_free(sdfe_text_t *text);
 
 #endif // SDFE_ENGINEINCLUDE_H_
