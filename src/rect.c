@@ -66,6 +66,34 @@ int sdfe_rect_init(sdfe_rect_t *rect, GLfloat x, GLfloat y, GLfloat w, GLfloat h
         return SDFE_RECT_NO_ERROR;
 }
 
+void sdfe_rect_clip4f(sdfe_rect_t *rect, GLfloat x, GLfloat y, GLfloat w, GLfloat h)
+{
+        if (rect) {
+                vertices[2]  = x;
+                vertices[3]  = y;
+                vertices[6]  = w;
+                vertices[7]  = y;
+                vertices[10] = w;
+                vertices[11] = h;
+                vertices[14] = x;
+                vertices[15] = h;
+
+                glBindVertexArray(rect->vao);
+                glBindBuffer(GL_ARRAY_BUFFER, rect->vbo);
+                glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+                glBindVertexArray(0);
+
+                vertices[2]  = 0.0f;
+                vertices[3]  = 0.0f;
+                vertices[6]  = 1.0f;
+                vertices[7]  = 0.0f;
+                vertices[10] = 1.0f;
+                vertices[11] = 1.0f;
+                vertices[14] = 0.0f;
+                vertices[15] = 1.0f;
+        }
+}
+
 void sdfe_rect_render(sdfe_rect_t *rect)
 {
         if (rect) {
