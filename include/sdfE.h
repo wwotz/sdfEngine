@@ -24,6 +24,9 @@ extern void sdfe_debug_stack_push(const char *msg, const char *file, size_t line
 extern const char *sdfe_debug_stack_pop(void);
 extern int sdfe_debug_had_error(void);
 
+/* utils */
+extern char *sdfe_utils_fmap(const char *path);
+
 /* window */
 #define SDFE_WINDOW_X SDL_WINDOWPOS_UNDEFINED
 #define SDFE_WINDOW_Y SDL_WINDOWPOS_UNDEFINED
@@ -50,9 +53,11 @@ extern void sdfe_window_swap(void);
 extern void sdfe_window_events(void);
 extern int sdfe_window_poll_event(void);
 extern int sdfe_window_event_type(void);
+extern int sdfe_window_event_keycode(void);
 extern int sdfe_window_get_running(void);
 extern GLfloat sdfe_window_get_width(void);
 extern GLfloat sdfe_window_get_height(void);
+extern void sdfe_window_set_clear_colour(GLuint colour);
 extern void sdfe_window_set_running(int running);
 extern void sdfe_window_free(void);
 
