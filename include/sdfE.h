@@ -32,7 +32,7 @@ extern char *sdfe_utils_fmap(const char *path);
 #define SDFE_WINDOW_Y SDL_WINDOWPOS_UNDEFINED
 #define SDFE_WINDOW_W 1200.0
 #define SDFE_WINDOW_H 800.0
-#define SDFE_WINDOW_FLAGS (SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL)
+#define SDFE_WINDOW_FLAGS (SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE)
 
 typedef enum SDFE_WINDOW_ENUM {
         SDFE_WINDOW_NO_ERROR = 0,
@@ -48,12 +48,15 @@ typedef enum SDFE_WINDOW_ENUM {
 extern GLfloat sdfe_model[16], sdfe_view[16], sdfe_projection[16];
 extern int sdfe_window_init(const char *name, int x, int y, int w, int h,
                             int flags);
+extern void sdfe_window_viewport(float x, float y, float w, float h);
+extern void sdfe_window_get_size(int *w, int *h);
 extern void sdfe_window_clear_buffers(GLbitfield buffers);
 extern void sdfe_window_swap(void);
 extern void sdfe_window_events(void);
 extern int sdfe_window_poll_event(void);
 extern int sdfe_window_event_type(void);
 extern int sdfe_window_event_keycode(void);
+extern int sdfe_window_event_window(void);
 extern int sdfe_window_get_running(void);
 extern GLfloat sdfe_window_get_width(void);
 extern GLfloat sdfe_window_get_height(void);
