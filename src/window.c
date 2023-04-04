@@ -99,6 +99,11 @@ int sdfe_window_event_type(void)
         return sdfe_event.type;
 }
 
+int sdfe_window_event_keycode(void)
+{
+        return sdfe_event.key.keysym.sym;
+}
+
 int sdfe_window_get_running(void)
 {
         return sdfe_running;
@@ -112,6 +117,14 @@ GLfloat sdfe_window_get_width(void)
 GLfloat sdfe_window_get_height(void)
 {
         return (GLfloat) sdfe_window_h;
+}
+
+void sdfe_window_set_clear_colour(GLuint colour)
+{
+        glClearColor(sdfe_colour_mask(colour, SDFE_COLOUR_MASK_R, GL_TRUE),
+                     sdfe_colour_mask(colour, SDFE_COLOUR_MASK_G, GL_TRUE),
+                     sdfe_colour_mask(colour, SDFE_COLOUR_MASK_B, GL_TRUE),
+                     sdfe_colour_mask(colour, SDFE_COLOUR_MASK_A, GL_TRUE));
 }
 
 void sdfe_window_set_running(int running)
