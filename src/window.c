@@ -65,11 +65,31 @@ int sdfe_window_init(const char *name, int x, int y, int w, int h,
         return SDFE_WINDOW_NO_ERROR;
 }
 
+void sdfe_window_viewport(float x, float y, float w, float h)
+{
+        glViewport(x, y, w, h);
+}
+
+void sdfe_window_get_size(int *w, int *h)
+{
+        SDL_GetWindowSize(sdfe_window, w, h);
+}
+
 void sdfe_window_events(void)
 {
         switch (sdfe_window_event_type()) {
                 case SDL_QUIT:
                         sdfe_window_set_running(0);
+                        break;
+                case SDL_WINDOWEVENT:
+                        switch (sdfe_window_event_window()) {
+                                case SDL_WINDOWEVENT_RESIZED:
+                                        sdfe_window_get_size(&sdfe_window_w, &sdfe_window_h);
+                                        sdfe_window_viewport(0.0, 0.0, sdfe_window_get_width(), sdfe_window_get_height());
+                                        sdfe_matrix_orthographic(sdfe_projection, 0.0, sdfe_window_get_width(), sdfe_window_get_height(),
+                                                                 0.0, 10.0, -10.0);
+                                        break;
+                        }
                         break;
         }
 }
@@ -102,6 +122,11 @@ int sdfe_window_event_type(void)
 int sdfe_window_event_keycode(void)
 {
         return sdfe_event.key.keysym.sym;
+}
+
+int sdfe_window_event_window(void)
+{
+        return sdfe_event.window.event;
 }
 
 int sdfe_window_get_running(void)
