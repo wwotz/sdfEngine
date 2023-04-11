@@ -14,6 +14,12 @@
 #include <GL/gl.h>
 
 #include <sys/time.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <poll.h>
+
 
 /* debug */
 #define SDFE_DEBUG_STACK_CAPACITY 10
@@ -332,5 +338,28 @@ extern void sdfe_text_set_x(sdfe_text_t *text, GLfloat x);
 extern void sdfe_text_set_y(sdfe_text_t *text, GLfloat y);
 extern void sdfe_text_render(sdfe_text_t *text, sdfe_glyph_t *glyph);
 extern void sdfe_text_free(sdfe_text_t *text);
+
+/* server */
+#define SDFE_SERVER_PORT "3490"
+#define SDFE_SERVER_BUFSIZE 256
+
+typedef enum SDFE_SERVER_ENUM {
+        SDFE_SERVER_NO_ERROR = 0,
+        SDFE_SERVER_REUSE_ERROR,
+        SDFE_SERVER_BIND_ERROR,
+        SDFE_SERVER_LISTEN_ERROR,
+        SDFE_SERVER_ACCEPT_ERROR,
+        SDFE_SERVER_ENUM_COUNT
+} SDFE_SERVER_ENUM;
+
+typedef enum sdfe_server_code_t {
+        SDFE_SERVER_READ = 0,
+        SDFE_SERVER_END,
+        SDFE_SERVER_CODE_COUNT
+} sdfe_server_code_t;
+
+extern int sdfe_server_start(void);
+extern sdfe_server_code_t sdfe_server_recv(void);
+extern void sfde_server_close(void);
 
 #endif // SDFE_ENGINEINCLUDE_H_

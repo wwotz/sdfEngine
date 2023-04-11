@@ -1,24 +1,52 @@
 #include "../include/sdfE.h"
 
+static char *default_vert_src = "#version 330 core\n"
+        "uniform mat4 model;\n"
+        "uniform mat4 projection;\n"
+        "uniform mat4 view;\n"
+        "layout (location = 0) in vec2 vertex;\n"
+        "layout (location = 1) in vec2 t_vertex;\n"
+        "out vec2 tex_vertex;\n"
+        "void main()\n"
+        "{\n"
+        "tex_vertex = t_vertex;\n"
+        "gl_Position = projection * view * model * vec4(vertex, 0.0, 1.0);\n"
+        "}";
+
+static char *default_frag_src = "#version 330 core\n"
+        "uniform sampler2D texture_unit;\n"
+        "uniform vec4 colour;\n"
+        "in vec2 tex_vertex;\n"
+        "uniform float time;\n"
+        "void main()\n"
+        "{\n"
+        "vec2 uv = vec2(tex_vertex - vec2(0.5));\n"
+        "vec3 col = smoothstep(0.0, 0.1, vec3(length(uv)));\n"
+        "gl_FragColor = vec4(col, 1.0);\n"
+        "}";
+
 int main(int argc, char **argv)
 {
-        char *title = malloc(128);
-        snprintf(title, 128, "sdfEngine %d", getpid());
-        sdfe_window_init(title,
+        //returns new file descriptor to communicate on.
+        if (sdfe_server_start() != 0) {
+                fprintf(stderr, "%s\n", sdfe_debug_stack_pop());
+                exit(EXIT_FAILURE);
+        }
+
+        sdfe_window_init("sdfEngine",
                          SDFE_WINDOW_X,
                          SDFE_WINDOW_Y,
                          SDFE_WINDOW_W,
                          SDFE_WINDOW_H,
                          SDFE_WINDOW_FLAGS);
-        free(title);
-        if (sdfe_debug_had_error()) {
+         if (sdfe_debug_had_error()) {
                 fprintf(stderr, "%s\n", sdfe_debug_stack_pop());
                 exit(EXIT_FAILURE);
         }
 
         sdfe_program_info_t rect_pinfo = {
-                { SDFE_SHADER_FILE, GL_VERTEX_SHADER, "../shaders/yours.vert" },
-                { SDFE_SHADER_FILE, GL_FRAGMENT_SHADER, "../shaders/yours.frag" },
+                { SDFE_SHADER_SOURCE, GL_VERTEX_SHADER, default_vert_src },
+                { SDFE_SHADER_SOURCE, GL_FRAGMENT_SHADER, default_frag_src },
         };
         GLuint rect_program = sdfe_program_create(rect_pinfo);
         if (sdfe_debug_had_error()) {
@@ -42,15 +70,6 @@ int main(int argc, char **argv)
                 while (sdfe_window_poll_event()) {
                         sdfe_window_events();
                         switch (sdfe_window_event_type()) {
-                                case SDL_KEYDOWN:
-                                        switch (sdfe_window_event_keycode()) {
-                                                case SDLK_F1:
-                                                        glDeleteProgram(rect_program);
-                                                        rect_program = sdfe_program_create(rect_pinfo);
-                                                        rect.program = rect_program;
-                                                        break;
-                                        }
-                                        break;
                                 case SDL_WINDOWEVENT:
                                         switch (sdfe_window_event_window()) {
                                                 case SDL_WINDOWEVENT_RESIZED:
@@ -60,6 +79,14 @@ int main(int argc, char **argv)
                                         }
                                         break;
                         }
+                }
+                sdfe_server_code_t server_code = sdfe_server_recv();
+                switch (server_code) {
+                        case SDFE_SERVER_END:
+                                sdfe_window_set_running(0);
+                                break;
+                        case SDFE_SERVER_READ:
+                                break;
                 }
                 sdfe_window_clear_buffers(GL_COLOR_BUFFER_BIT);
                 sdfe_rect_render(&rect);

@@ -61,6 +61,8 @@ int sdfe_window_init(const char *name, int x, int y, int w, int h,
 
         glViewport(0.0, 0.0, sdfe_window_get_width(), sdfe_window_get_height());
 
+        SDL_SetWindowAlwaysOnTop(sdfe_window,  SDL_TRUE);
+
         sdfe_running = 1;
         return SDFE_WINDOW_NO_ERROR;
 }
