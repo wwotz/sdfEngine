@@ -1,4 +1,4 @@
-;;; sdfeclient.el --- sdfEngine Client -*- lexical-binding: t; -*-
+;;; sdfe-client.el --- sdfEngine Client -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2023 wwotz
 ;;
@@ -23,8 +23,8 @@
 (defvar sdfe-server-host "127.0.0.1") ; localhost
 (defvar sdfe-server-process nil) ; the server process
 (defvar sdfe-server-bufsize 256) ; the server's buffer size
-(defvar sdfe-server-shader-refresh-command "<shader-refresh>") ; refresh command for the sdfe-server.
-(defvar sdfe-server-timer-reset-command "<timer-reset>") ; timer reset for the sdfe-server.
+(defvar sdfe-server-shader-refresh-command "shader-refresh") ; refresh command for the sdfe-server.
+(defvar sdfe-server-timer-reset-command "timer-reset") ; timer reset for the sdfe-server.
 
 (defun sdfe-buffer-absolute-path nil
   "returns the absolute path of the current buffer."
@@ -48,22 +48,20 @@
   "causes the sdf-server to re-read the fragment shader."
   (interactive)
   (if (not (null sdfe-server-process))
-      (process-send-string sdfe-server-process (string-pad sdfe-server-shader-refresh-command sdfe-server-bufsize 0))))
-
-(if (not (null sdfe-server-process))
-    (print "sdfe-server-process is not null")
-  (print "sdfe-server-process is null"))
+      (process-send-string sdfe-server-process (string-pad sdfe-server-shader-refresh-command sdfe-server-bufsize 0))
+    (message "sdfEngine server is not active.")))
 
 (defun sdfe-client-listen-start nil
   "starts listening to the sdfe-server."
   (interactive)
-  (if (null sdfe-server-process)
-      (setq sdfe-server-process (make-network-process :name "sdfe-client" :buffer "*sdfe-client*"
-                                                       :family 'ipv4 :host sdfe-server-host
-                                                       :service sdfe-server-service
-                                                       :sentinel 'sdfe-client-listen-sentinel
-                                                       :filter 'sdfe-client-listen-filter))
-    nil))
+  (progn
+    (if (null sdfe-server-process)
+        (setq sdfe-server-process (make-network-process :name "sdfe-client" :buffer "*sdfe-client*"
+                                                        :family 'ipv4 :host sdfe-server-host
+                                                        :service sdfe-server-service
+                                                        :sentinel 'sdfe-client-listen-sentinel
+                                                        :filter 'sdfe-client-listen-filter))
+      nil)))
 
 (defun sdfe-client-listen-stop nil
   "stops listening to the sdfe-server."
