@@ -34,22 +34,18 @@
 (defun sdfe-client-send-shader nil
   "sends the current buffers fragment shader path to the sdfe-server."
   (interactive)
-  (if (not (null sdfe-server-process))
-      (process-send-string sdfe-server-process (string-pad (get-buffer-absolute-path) sdfe-server-bufsize 0))
-    nil))
+  (process-send-string sdfe-server-process (sdfe-buffer-absolute-path)))
 
 (defun sdfe-client-timer-reset nil
   "causes the sdf-server to set the time uniform to 0.0."
   (interactive)
-  (if (not (null sdfe-server-process))
-      (process-send-string sdfe-server-process (string-pad sdfe-server-timer-reset-command sdfe-server-bufsize 0))))
+  (process-send-string sdfe-server-process sdfe-server-timer-reset-command))
 
 (defun sdfe-client-shader-refresh nil
   "causes the sdf-server to re-read the fragment shader."
   (interactive)
-  (if (not (null sdfe-server-process))
-      (process-send-string sdfe-server-process (string-pad sdfe-server-shader-refresh-command sdfe-server-bufsize 0))
-    (message "sdfEngine server is not active.")))
+  (process-send-string sdfe-server-process sdfe-server-shader-refresh-command))
+
 
 (defun sdfe-client-listen-start nil
   "starts listening to the sdfe-server."
@@ -61,25 +57,22 @@
                                                         :service sdfe-server-service
                                                         :sentinel 'sdfe-client-listen-sentinel
                                                         :filter 'sdfe-client-listen-filter))
-      nil)))
+      (message "The sdfEngine server is already running."))))
 
 (defun sdfe-client-listen-stop nil
   "stops listening to the sdfe-server."
   (interactive)
   (progn
-    (delete-process sdfe-server-process)
-    (setq sdfe-server-process nil)))
+    (process-send-eof sdfe-server-process)
+    (setq sdfe-server-process (delete-process sdfe-server-process))))
 
 (defun sdfe-client-listen-filter (proc string)
   (message string))
 
-(setq current-buffer-path (get-buffer-absolute-path))
-
 (defun sdfe-client-listen-sentinel (proc string)
-  (when (string= msg "connection broken by remote peer\n")
-    (progn
-      (message (format "client %s has quit" proc))
-      (setq sdfe-server-process nil))))
+  (when (string= string "connection broken by remote peer\n")
+      (message (format "client %s has quit" proc))))
+
 
 (provide 'sdfe-client)
 ;;; client.el ends here
