@@ -248,6 +248,7 @@ extern GLfloat sdfe_rect_get_y(sdfe_rect_t *rect);
 extern GLfloat sdfe_rect_get_width(sdfe_rect_t *rect);
 extern GLfloat sdfe_rect_get_height(sdfe_rect_t *rect);
 extern GLuint sdfe_rect_get_colour(sdfe_rect_t *rect);
+extern void sdfe_rect_set_program(sdfe_rect_t *rect, GLuint program);
 extern void sdfe_rect_set_x(sdfe_rect_t *rect, GLfloat x);
 extern void sdfe_rect_set_y(sdfe_rect_t *rect, GLfloat y);
 extern void sdfe_rect_set_width(sdfe_rect_t *rect, GLfloat w);
@@ -353,13 +354,16 @@ typedef enum SDFE_SERVER_ENUM {
 } SDFE_SERVER_ENUM;
 
 typedef enum sdfe_server_code_t {
-        SDFE_SERVER_READ = 0,
-        SDFE_SERVER_END,
-        SDFE_SERVER_CODE_COUNT
+        SDFE_SERVER_CODE_NONE = 0,
+        SDFE_SERVER_CODE_END,
+        SDFE_SERVER_CODE_LOAD_SHADER,
+        SDFE_SERVER_CODE_REFRESH_SHADER,
+        SDFE_SERVER_CODE_RESET_TIMER,
 } sdfe_server_code_t;
 
 extern int sdfe_server_start(void);
+extern char *sdfe_server_get_message(void);
 extern sdfe_server_code_t sdfe_server_recv(void);
-extern void sfde_server_close(void);
+extern void sdfe_server_close(void);
 
 #endif // SDFE_ENGINEINCLUDE_H_
