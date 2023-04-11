@@ -161,6 +161,12 @@ GLuint sdfe_rect_get_colour(sdfe_rect_t *rect)
         return 0;
 }
 
+void sdfe_rect_set_program(sdfe_rect_t *rect, GLuint program)
+{
+        if (rect && glIsProgram(program))
+                rect->program = program;
+}
+
 void sdfe_rect_set_x(sdfe_rect_t *rect, GLfloat x)
 {
         if (rect)
