@@ -80,6 +80,9 @@ void sdfe_window_get_size(int *w, int *h)
 void sdfe_window_events(void)
 {
         switch (sdfe_window_event_type()) {
+                case SDL_QUIT:
+                        sdfe_window_set_running(0);
+                        break;
                 case SDL_WINDOWEVENT:
                         switch (sdfe_window_event_window()) {
                                 case SDL_WINDOWEVENT_RESIZED:
