@@ -32,7 +32,8 @@ static char *canvas_path = NULL;
 static void sdfe_response_exit(void)
 {
         if (sdfe_debug_had_error()) {
-                fprintf(stderr, "%s\n", sdfe_debug_stack_pop());
+                const char *msg = sdfe_debug_stack_pop();
+                sdfe_server_send_message(msg);
         }
         sdfe_window_set_running(0);
 }
@@ -48,7 +49,8 @@ static void sdfe_response_load_shader(void)
         };
         new_program = sdfe_program_create(new_pinfo);
         if (sdfe_debug_had_error()) {
-                fprintf(stderr, "%s\n", sdfe_debug_stack_pop());
+                const char *msg = sdfe_debug_stack_pop();
+                sdfe_server_send_message(msg);
         } else {
                 if (!canvas_path) {
                         free(canvas_path);
@@ -72,7 +74,9 @@ static void sdfe_response_refresh_shader(void)
         };
         new_program = sdfe_program_create(new_pinfo);
         if (sdfe_debug_had_error()) {
-                fprintf(stderr, "%s\n", sdfe_debug_stack_pop());
+                const char *msg = sdfe_debug_stack_pop();
+                sdfe_server_send_message(msg);
+
         } else {
                 glDeleteProgram(canvas_program);
                 canvas_program = new_program;
