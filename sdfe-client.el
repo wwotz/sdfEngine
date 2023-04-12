@@ -50,21 +50,18 @@
 (defun sdfe-client-listen-start nil
   "starts listening to the sdfe-server."
   (interactive)
-  (progn
-    (if (null sdfe-server-process)
-        (setq sdfe-server-process (make-network-process :name "sdfe-client" :buffer "*sdfe-client*"
-                                                        :family 'ipv4 :host sdfe-server-host
-                                                        :service sdfe-server-service
-                                                        :sentinel 'sdfe-client-listen-sentinel
-                                                        :filter 'sdfe-client-listen-filter))
-      (message "The sdfEngine server is already running."))))
+  (setq sdfe-server-process (make-network-process :name "sdfe-client" :buffer "*sdfe-client*"
+                                                  :family 'ipv4 :host sdfe-server-host
+                                                  :service sdfe-server-service
+                                                  :sentinel 'sdfe-client-listen-sentinel
+                                                  :filter 'sdfe-client-listen-filter)))
 
 (defun sdfe-client-listen-stop nil
   "stops listening to the sdfe-server."
   (interactive)
   (progn
     (process-send-eof sdfe-server-process)
-    (setq sdfe-server-process (delete-process sdfe-server-process))))
+    (delete-process sdfe-server-process)))
 
 (defun sdfe-client-listen-filter (proc string)
   (message string))
