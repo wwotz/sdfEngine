@@ -364,6 +364,7 @@ typedef enum sdfe_server_code_t {
 extern int sdfe_server_start(void);
 extern char *sdfe_server_get_message(void);
 extern sdfe_server_code_t sdfe_server_recv(void);
+extern void sdfe_server_send_message(const char *msg);
 extern void sdfe_server_close(void);
 
 #endif // SDFE_ENGINEINCLUDE_H_
