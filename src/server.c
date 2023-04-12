@@ -67,6 +67,18 @@ int sdfe_server_start(void)
         return 0;
 }
 
+void sdfe_server_send_message(const char *msg)
+{
+        size_t msg_len = strlen(msg);
+        if (msg_len > 4096)
+                msg_len = 4096;
+        ssize_t nsend = 0, curr_send;
+        while (nsend != msg_len) {
+                curr_send = send(client_fd, msg, msg_len, 0);
+                nsend += curr_send;
+        }
+}
+
 char *sdfe_server_get_message(void)
 {
         return server_buf;
